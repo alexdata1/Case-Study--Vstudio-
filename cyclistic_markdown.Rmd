@@ -51,7 +51,7 @@ str(data_2021_05)
 colnames(data_2021_05)
 ...
 str(data_2022_04)
-colnames(_data_2022_04)
+colnames(data_2022_04)
 ```
 
 Each was shown to have 13 columns that were identically named and in the same order. The format of the data within them also seemed to match. Satisfied with this, I proceeded to merge them into a new data frame.
