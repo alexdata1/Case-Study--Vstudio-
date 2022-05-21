@@ -1,0 +1,96 @@
+---
+title: "Case Study - Cyclistic"
+author: "Alex Hollomby"
+date: "13/05/2022"
+output: html_document
+   
+---
+
+The following documentation outlines the steps that I took to process, prepare, analyse and visualise data from the fictitious company Cyclistic as part of the capstone project for the Google Data Analytics Certificate. Further information on this project along with the full project can be found on my portfolio [**here**](http://ftghdmsfgoxdlfg.com).
+
+## Step 1 - Setting up my environment
+
+The first step in the case study was installing and loading all the packages I knew would be necessary for this project.
+
+```{r loading packages, eval=FALSE}
+
+install.packages("here")
+install.packages("tidyverse")
+
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(here)
+```
+
+The 'Tidyverse' package contains several libraries I used in this project:
+
+-   *ggplot2* - for creating visualisations
+-   *readr* - for importing the data
+-   *lubridate* - for working with date and time
+-   *dplyr* - for manipulating the data
+
+
+## Step 2 - Importing the raw data
+
+Next came importing the raw data, which consists of twelve .csv files containing bike trip data from May 2021 to April 2022. The files were imported to the project folder and named using the *here* and *readr* packages.
+
+```{r importing data, eval=FALSE}
+data_2021_05 <- read_csv(here("raw_data/202105-divvy-tripdata.csv"))
+...
+data_2022_04 <- read_csv(here("raw_data/202204-divvy-tripdata.csv"))
+```
+
+## Step 3 - Merging the data
+
+As the raw data I needed was separated into twelve datasets, it was necessary to merge them all into a single data frame before any meaningful analysis could be performed. This meant the next step was to make sure that each the twelve datasets would match before merging them into one data frame. Performing the colnames() and str() functions gave me a quick look at each dataset.
+
+```{r checking data, eval=FALSE}
+str(data_2021_05)
+colnames(data_2021_05)
+...
+str(data_2022_04)
+colnames(_data_2022_04)
+```
+
+Each was shown to have 13 columns that were identically named and in the same order. The format of the data within them also seemed to match. Satisfied with this, I proceeded to merge them into a new data frame.
+
+```{r merging data, eval=FALSE}
+cyclistic_rides <- rbind(data_2021_05, ... , data_2022_04)
+```
+
+Taking a look (again via the str() function )at the shiny new data frame revealed that the process was complete - thirteen columns with the same formatting as before, now with all 5,757,551 rows. I saved this as a new .csv file just in case.
+
+```{r saving data frame, eval=FALSE}
+write.csv(cyclistic_rides, "cyclistic_rides.csv", row.names = FALSE)
+```
+
+## Step 4 - Processing the data
+
+With the data now prepared for analysis, it was time to start transforming it into something I could work with.. 
+
+The first and most obvious step was to add some new columns that made sense of some of the existing ones. By taking the time difference between the 'started_at' and 'ended_at' columns, I could work out the duration of each trip. I thought it would be useful to have the day and month of each trip as new columns. The mutate() function from *dplyr* was used here to add the new columns, and *lubridate* was used to convert the existing columns from character format to time format.
+
+```{r adding new columns for time duration, eval=FALSE}
+cyclistic_rides <- cyclistic_rides %>% mutate(across(c(started_at, ended_at), ymd_hms), ride_duration_mins = round(difftime(ended_at, started_at, units="mins"))) %>% 
+ mutate(hour_of_ride = hour(started_at)) %>% 
+ mutate(time_of_day = case_when(am(started_at) ~ "a.m.", pm(started_at) ~ "p.m.", TRUE ~ "something's wrong..")) %>% 
+ mutate(day_of_ride = wday(started_at, label=TRUE, abbr = FALSE)) %>% 
+ mutate(month_of_ride = month(started_at, label=TRUE, abbr = FALSE))
+```
+
+Similarly, the distance of each trip could be worked out using the longitude/latitude columns. I knew that the *lubridate* package could assist with the former task, however for the latter I was unsure. Some searching online showed me the *Geodist* package could help me out. Having installed and loaded the package, I used it to add a column that would show the ddistance of each trip in km
+
+```{r adding new columns for distance, eval=FALSE}
+install.packages("geodist")
+library(geodist)
+cyclistic_rides <- cyclistic_rides %>% mutate(ride_distance_km = round(
+    geodist::geodist_vec(x1 = start_lng, y1 = start_lat, x2 = end_lng, y2 = end_lat, paired = TRUE, measure = "haversine")
+    /1000, digits = 2))
+```
+
+
+
+## Step 5 - Cleaning the data
+
