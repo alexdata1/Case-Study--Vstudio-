@@ -34,7 +34,7 @@ The 'Tidyverse' package contains several libraries I used in this project:
 
 ## Step 2 - Importing the raw data
 
-Next came importing the raw data, which consists of twelve .csv files containing bike trip data from May 2021 to April 2022. The files were imported to the project folder and named using the *here* and *readr* packages.
+Then came importing the raw data, which consists of twelve .csv files containing bike trip data from May 2021 to April 2022. The files were imported to the project folder and named using the *here* and *readr* packages.
 
 ```{r importing data, eval=FALSE}
 data_2021_05 <- read_csv(here("raw_data/202105-divvy-tripdata.csv"))
@@ -70,7 +70,7 @@ write.csv(cyclistic_rides, "cyclistic_rides.csv", row.names = FALSE)
 
 With the data now prepared for analysis, it was time to start transforming it into something I could work with.. 
 
-The first and most obvious step was to add some new columns that made sense of some of the existing ones. By taking the time difference between the 'started_at' and 'ended_at' columns, I could work out the duration of each trip. I thought it would be useful to have the day and month of each trip as new columns. The mutate() function from *dplyr* was used here to add the new columns, and *lubridate* was used to convert the existing columns from character format to time format.
+The first and most obvious step was to add some new columns that made sense of some of the existing ones. By taking the time difference between the $started_at and $ended_at columns, I could work out the duration of each trip. I thought it would be useful to have the day and month of each trip as new columns. The mutate() function from *dplyr* was used here to add the new columns, and *lubridate* was used to convert the existing columns from character format to time format.
 
 ```{r adding new columns for time duration, eval=FALSE}
 cyclistic_rides <- cyclistic_rides %>% mutate(across(c(started_at, ended_at), ymd_hms), ride_duration_mins = round(difftime(ended_at, started_at, units="mins"))) %>% 
@@ -80,7 +80,7 @@ cyclistic_rides <- cyclistic_rides %>% mutate(across(c(started_at, ended_at), ym
  mutate(month_of_ride = month(started_at, label=TRUE, abbr = FALSE))
 ```
 
-Similarly, the distance of each trip could be worked out using the longitude/latitude columns. I knew that the *lubridate* package could assist with the former task, however for the latter I was unsure. Some searching online showed me the *Geodist* package could help me out. Having installed and loaded the package, I used it to add a column that would show the ddistance of each trip in km
+Similarly, the distance of each trip could be worked out using the longitude/latitude columns. I knew that the *lubridate* package could assist with the former task, however for the latter I was unsure. Some searching online showed me the *Geodist* package could help me out. Having installed and loaded the package, I used it to add a column that would show the ddistance of each trip in km.
 
 ```{r adding new columns for distance, eval=FALSE}
 install.packages("geodist")
@@ -90,7 +90,28 @@ cyclistic_rides <- cyclistic_rides %>% mutate(ride_distance_km = round(
     /1000, digits = 2))
 ```
 
-
-
 ## Step 5 - Cleaning the data
 
+Next it was time to clean the data by removing any rows containing incorrect or unnecessary values from the data frame, along with any obvious outliers. 
+
+To that end, I decided that the rows should be removed as follows:
+-   Any rows where $start_lat, $start_lng, $end_lat or $end_lng were missing values;
+-   Any rows where $started_at or $ended_at were missing values;
+-   Any rows where $ride_distance_km was either less than 0.1 km or greater than 10 km;
+-   Any rows where $ride_duration_mins was either less than 2 minutes or greater than 240 minutes (i.e. 4 hours); and
+-   Any rows where $member_casual was neither 'casual' nor 'member'.
+
+Although useful to filter out any aborted trips, I realised that this approach would also remove any circular trips (i.e. trips that started and ended at the same location). However I thought that this would still be the best approach due to the significant number of aborted trips, which could skew the findings of the data. This realisation showed another potential problem with the analysis - $ride_distance_km only gives the distance between the start and end points of the trip as the crow flies - not the actual distance travelled. 
+
+I also debated removing any rows missing a $start_station_name or $end_station_name value, but given the large amount of trips missing these, I thought it best to include them so as not to dilute the available data too much.
+
+*dplyr* was used to filter the data frame. I saved a new copy afterwards.
+
+```{r cleaning the data, eval=FALSE}
+cyclistic_rides_cleaned <- cyclistic_rides %>% 
+ filter(across(c(start_lat, start_lng, end_lat, end_lng, started_at, ended_at), ~ !is.na(.))) %>%
+ filter(ride_duration_mins >= 2 & ride_duration_mins <= 240 & ride_distance_km <= 10 & ride_distance_km >= 0.1) %>%
+ filter(member_casual %in% c("member", "casual"))
+
+write.csv(cyclistic_rides_cleaned, "cyclistic_rides_cleaned.csv", row.names = FALSE)
+```
