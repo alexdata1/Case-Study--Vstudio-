@@ -1,12 +1,22 @@
 ---
 title: "Case Study - Cyclistic"
 author: "Alex Hollomby"
-date: "13/05/2022"
+date: "25/05/2022"
 output: html_document
    
 ---
 
-The following documentation outlines the steps that I took to process, prepare, analyse and visualise data from the fictitious company Cyclistic as part of the capstone project for the Google Data Analytics Certificate. Further information on this project along with the full project can be found on my portfolio [**here**](http://ftghdmsfgoxdlfg.com).
+## Introduction
+
+As the culmination of my study of Google's Data Analytics Course, I was tasked with carrying out a case study as a capstone project. would showcase the technical abilities that I learned, as well as my understanding of the data analysis process as laid out by Google.
+
+For reference, [here](https://github.com/alexdata1/Case-Study--Vstudio-)is a link to my GitHub repository for this project, which includes this markdown along with the code used in the project.
+My [Tableau Public page](https://public.tableau.com/app/profile/alex.hollomby/viz/Cyclistic_16534254417140/CyclisticInsights) for this project contains all visualisations created as part of this project (these are also shown in Step 6 of the markdown)
+
+
+
+
+The following documentation outlines the steps that I took to process, prepare, analyse and visualise data from the fictitious company Cyclistic as part of the capstone project for the Google Data Analytics Certificate.
 
 ## Step 1 - Setting up my environment
 
@@ -19,14 +29,12 @@ install.packages("tidyverse")
 
 library(tidyverse)
 library(dplyr)
-library(ggplot2)
 library(lubridate)
 library(here)
 ```
 
 The 'Tidyverse' package contains several libraries I used in this project:
 
--   *ggplot2* - for creating visualisations
 -   *readr* - for importing the data
 -   *lubridate* - for working with date and time
 -   *dplyr* - for manipulating the data
@@ -70,7 +78,7 @@ write.csv(cyclistic_rides, "cyclistic_rides.csv", row.names = FALSE)
 
 With the data now prepared for analysis, it was time to start transforming it into something I could work with.. 
 
-The first and most obvious step was to add some new columns that made sense of some of the existing ones. By taking the time difference between the $started_at and $ended_at columns, I could work out the duration of each trip. I thought it would be useful to have the day and month of each trip as new columns. The mutate() function from *dplyr* was used here to add the new columns, and *lubridate* was used to convert the existing columns from character format to time format.
+The first and most obvious step was to add some new columns that made sense of some of the existing ones. By taking the time difference between the started_at and ended_at columns, I could work out the duration of each trip. I thought it would be useful to have the day and month of each trip as new columns. The mutate() function from *dplyr* was used here to add the new columns, and *lubridate* was used to convert the existing columns from character format to time format.
 
 ```{r adding new columns for time duration, eval=FALSE}
 cyclistic_rides <- cyclistic_rides %>% mutate(across(c(started_at, ended_at), ymd_hms), ride_duration_mins = round(difftime(ended_at, started_at, units="mins"))) %>% 
@@ -95,15 +103,15 @@ cyclistic_rides <- cyclistic_rides %>% mutate(ride_distance_km = round(
 Next it was time to clean the data by removing any rows containing incorrect or unnecessary values from the data frame, along with any obvious outliers. 
 
 To that end, I decided that the rows should be removed as follows:
--   Any rows where $start_lat, $start_lng, $end_lat or $end_lng were missing values;
--   Any rows where $started_at or $ended_at were missing values;
--   Any rows where $ride_distance_km was either less than 0.1 km or greater than 10 km;
--   Any rows where $ride_duration_mins was either less than 2 minutes or greater than 240 minutes (i.e. 4 hours); and
--   Any rows where $member_casual was neither 'casual' nor 'member'.
+-   Any rows where start_lat, start_lng, end_lat or end_lng were missing values;
+-   Any rows where started_at or ended_at were missing values;
+-   Any rows where ride_distance_km was either less than 0.1 km or greater than 10 km;
+-   Any rows where ride_duration_mins was either less than 2 minutes or greater than 240 minutes (i.e. 4 hours); and
+-   Any rows where member_casual was neither 'casual' nor 'member'.
 
-Although useful to filter out any aborted trips, I realised that this approach would also remove any circular trips (i.e. trips that started and ended at the same location). However I thought that this would still be the best approach due to the significant number of aborted trips, which could skew the findings of the data. This realisation showed another potential problem with the analysis - $ride_distance_km only gives the distance between the start and end points of the trip as the crow flies - not the actual distance travelled. 
+Although useful to filter out any aborted trips, I realised that this approach would also remove any circular trips (i.e. trips that started and ended at the same location). However I thought that this would still be the best approach due to the significant number of aborted trips, which could skew the findings of the data. This realisation showed another potential problem with the analysis - ride_distance_km only gives the distance between the start and end points of the trip as the crow flies - not the actual distance travelled. 
 
-I also debated removing any rows missing a $start_station_name or $end_station_name value, but given the large amount of trips missing these, I thought it best to include them so as not to dilute the available data too much.
+I also considered removing any rows missing a start_station_name or end_station_name value, but given the large amount of trips missing these, I thought it best to include them so as not to dilute the available data too much.
 
 *dplyr* was used to filter the data frame. I saved a new copy afterwards.
 
@@ -115,3 +123,12 @@ cyclistic_rides_cleaned <- cyclistic_rides %>%
 
 write.csv(cyclistic_rides_cleaned, "cyclistic_rides_cleaned.csv", row.names = FALSE)
 ```
+
+## Step 6 - Visualising the data
+
+I opted for Tableau Public as a means visualise the project's data. Its ability to work with large datasets and its ability to easily access and share visualisations made it a natural choice.
+
+<div class='tableauPlaceholder' id='viz1653511370350' style='position: relative'><noscript><a href='#'><img alt='Cyclistic Insights ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;SX&#47;SX4Y7Q7Z2&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;SX4Y7Q7Z2' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;SX&#47;SX4Y7Q7Z2&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1653511370350');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1016px';vizElement.style.height='991px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+
+This data story comprises my exploration of the data. Click through each header to follow along.
+
