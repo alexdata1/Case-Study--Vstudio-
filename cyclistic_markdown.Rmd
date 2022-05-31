@@ -1,13 +1,11 @@
 ---
 title: "Case Study - Cyclistic"
 author: "Alex Hollomby"
-date: "29/05/2022"
-output: html_document
-   
+date: "31/05/2022"
+output:
+  pdf_document: default
+  html_document: default
 ---
-
-## *How Does a Bike-Share Navigate Speedy Success?*
-## By Alex Hollomby
 
 ### Notes on the project
 
@@ -118,7 +116,7 @@ cyclistic_rides <- cyclistic_rides %>% mutate(across(c(started_at, ended_at), ym
  mutate(month_of_ride = month(started_at, label=TRUE, abbr = FALSE))
 ```
 
-Similarly, the distance of each trip could be worked out using the longitude/latitude columns. I knew that the *lubridate* package could assist with the former task, however for the latter I was unsure. Some searching online showed me the *Geodist* package could help me out. Having installed and loaded the package, I used it to add a column that would show the ddistance of each trip in km.
+Similarly, the distance of each trip could be worked out using the longitude/latitude columns. I knew that the *lubridate* package could assist with the former task, however for the latter I was unsure. Some searching online showed me the *Geodist* package could help me out. Having installed and loaded the package, I used it to add a column that would show the distance of each trip in km.
 
 ```{r adding new columns for distance, eval=FALSE}
 install.packages("geodist")
@@ -160,17 +158,7 @@ With the data now cleaned, I took the next step - creating visualisations to sha
 
 I opted for Tableau Public to visualise the project's data. Its ability to work with large datasets and easily access and share visualisations made it a natural choice, compared with R libraries that were less accessible and less comprehensive. 
 
-<div class='tableauPlaceholder' id='viz1653853776361' style='position: relative'><noscript><a href='#'><img alt='Cyclistic Insights ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Cy&#47;Cyclistic_16534254417140&#47;CyclisticInsights&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='views&#47;Cyclistic_16534254417140&#47;CyclisticInsights?:language=en-US&amp;:embed=true' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Cy&#47;Cyclistic_16534254417140&#47;CyclisticInsights&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                
-
-```{js, embedcode}
-
-var divElement = document.getElementById('viz1653853776361');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1016px';vizElement.style.height='991px';                    
-var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    
-vizElement.parentNode.insertBefore(scriptElement, vizElement);  
-
-```
-
-This data story comprises my exploration of the data. Click through each header to follow along. Casual riders are colour-coded blue and annual members are colour-coded red for the sake of consistency and visibility throughout.
+This data story comprises my exploration of the data. Click through each header to follow along on my [Tableau Public page](https://public.tableau.com/app/profile/alex.hollomby/viz/Cyclistic_16534254417140/CyclisticInsights). Casual riders are colour-coded blue and annual members are colour-coded red for the sake of consistency and visibility throughout.
 
 #### Insights from the data
 
